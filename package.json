@@ -2,7 +2,7 @@
   "name": "react-native-nordic-thingy",
   "version": "0.1.0",
   "description": "Used to manage the BLE connection to Nordic THINGY devices. It subscribes to the many sensor notifications and parses the values.",
-  "source": "./src/index.tsx",
+  "source": "./src/index.ts",
   "main": "./lib/commonjs/index.js",
   "module": "./lib/module/index.js",
   "exports": {
@@ -70,6 +70,7 @@
     "@release-it/conventional-changelog": "^9.0.2",
     "@types/jest": "^29.5.5",
     "@types/react": "^18.2.44",
+    "@types/react-native": "^0.73.0",
     "commitlint": "^17.0.2",
     "del-cli": "^5.1.0",
     "eslint": "^8.51.0",
@@ -184,5 +185,8 @@
     "type": "module-legacy",
     "languages": "kotlin-swift",
     "version": "0.43.0"
+  },
+  "dependencies": {
+    "react-native-ble-plx": "^3.2.1"
   }
 }

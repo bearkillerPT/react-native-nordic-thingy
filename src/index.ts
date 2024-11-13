@@ -6,17 +6,14 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
+// Check if the native module is linked and available, or throw an error if not
 const NordicThingy = NativeModules.NordicThingy
   ? NativeModules.NordicThingy
   : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
-
-export function multiply(a: number, b: number): Promise<number> {
-  return NordicThingy.multiply(a, b);
-}
+    {},
+    {
+      get() {
+        throw new Error(LINKING_ERROR);
+      },
+    }
+  );
