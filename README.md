@@ -1,6 +1,6 @@
 # react-native-nordic-thingy
-
-Used to manage the BLE connection to Nordic THINGY devices. It subscribes to the many sensor notifications and parses the values.
+This library is not usable yet. I've started development on it, but it's not high priority so it might take a bit.
+Used to manage the BLE connection to Nordic THINGY devices. It subscribes to the many sensor notifications, parses the values and makes them available in a React hook.
 
 ## Installation
 
