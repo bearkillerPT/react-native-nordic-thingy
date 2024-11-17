@@ -1,22 +1,24 @@
 # react-native-nordic-thingy
-This library is not usable yet. I've started development on it, but it's not high priority so it might take a bit.
-Used to manage the BLE connection to Nordic THINGY devices. It subscribes to the many sensor notifications, parses the values and makes them available in a React hook.
+This library is a WIP! For now I've a working example with a simple hook that connects to a Nordic Thingy device and monitors its temperature but I plan to add most other sensors! I also intend to check if it's possible to target other nordic devices other than the one I have (the Thingy 52).
 
 ## Installation
-
+### NPM
 ```sh
-npm install react-native-nordic-thingy
+npm install react-native-nordic-thingy react-native-ble-plx
+```
+### Yarn
+```sh
+yarn add react-native-nordic-thingy react-native-ble-plx
 ```
 
 ## Usage
 
 
 ```js
-import { multiply } from 'react-native-nordic-thingy';
+import useThingySensors from 'react-native-nordic-thingy';
 
 // ...
-
-const result = await multiply(3, 7);
+const { temperature, isConnected, error } = useThingySensors('DeviceName');
 ```
 
 
@@ -26,7 +28,7 @@ See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the 
 
 ## License
 
-MIT
+GLWTS(Good Luck With That Shit)
 
 ---
 

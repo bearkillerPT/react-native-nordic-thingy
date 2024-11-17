@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, Button } from 'react-native';
-import { useThingySensors } from '../src/useThingySensors';
+import React from 'react';
+import { View, Text } from 'react-native';
+import useThingySensors from 'react-native-nordic-thingy';
 
 const MyThingyDeviceComponent: React.FC = () => {
-  const [deviceId, setDeviceId] = useState<string | null>('sala'); // Set the deviceId to 'sala' for testing
-  const { temperature, isConnected, error } = useThingySensors(deviceId);
+  const { temperature, isConnected, error } = useThingySensors('Sala');
 
   return (
     <View>
@@ -22,8 +21,6 @@ const MyThingyDeviceComponent: React.FC = () => {
       ) : (
         <Text>Connecting...</Text>
       )}
-
-      <Button title="Reconnect" onPress={() => setDeviceId('NEW_DEVICE_ID')} />
     </View>
   );
 };

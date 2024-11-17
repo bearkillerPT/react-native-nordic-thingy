@@ -1,19 +1,27 @@
 import { useState, useEffect } from 'react';
-import { connectToDeviceAndMonitorSensors, stopScan } from './BLEManager'; // Assuming these functions are in your BLEManager.ts
+import {
+  connectToDeviceAndMonitorSensors,
+  requestPermissions,
+  startScanAndFindDeviceId,
+  stopScan,
+} from './BLEManager'; // Assuming these functions are in your BLEManager.ts
 
 // Custom hook to handle the Thingy device's sensor data (e.g., temperature)
-export function useThingySensors(deviceId: string | null) {
+export function useThingySensors(deviceName: string) {
   const [temperature, setTemperature] = useState<number | null>(null); // Store the temperature value
   const [isConnected, setIsConnected] = useState<boolean>(false); // Store the connection status
   const [error, setError] = useState<string | null>(null); // Store any errors that occur during connection or subscription
 
   useEffect(() => {
-    // If deviceId is null, there's nothing to do
-    if (!deviceId) return;
+    requestPermissions();
+  }, []);
 
+  useEffect(() => {
     // Function to connect and start monitoring the device
     const monitorDevice = async () => {
       try {
+        const deviceId = await startScanAndFindDeviceId(deviceName);
+        console.log('deviceId', deviceId);
         // Call the BLEManager to connect and start monitoring
         await connectToDeviceAndMonitorSensors(deviceId, (value: number) => {
           setTemperature(value); // Update the temperature value when data arrives
@@ -25,7 +33,7 @@ export function useThingySensors(deviceId: string | null) {
       }
     };
 
-    // Start monitoring the device if the deviceId is provided
+    // Start monitoring the device if the deviceName is provided
     monitorDevice();
 
     // Cleanup function to stop scanning and disconnect
@@ -34,7 +42,7 @@ export function useThingySensors(deviceId: string | null) {
       setIsConnected(false); // Reset connection status on unmount
       setTemperature(null); // Optionally clear temperature data when the component unmounts
     };
-  }, [deviceId]); // Re-run the effect if the deviceId changes
+  }, [deviceName]); // Re-run the effect if the device name changes
 
   return {
     temperature,
