@@ -1,6 +1,8 @@
-import { BleManager, Device } from 'react-native-ble-plx';
+import { BleManager, Device, type Subscription } from 'react-native-ble-plx';
 import { parseTemperatureData } from './SensorDataParser';
 import { PermissionsAndroid, Platform, type Permission } from 'react-native';
+import { NullSensorData, ServicesAndCharacteristics } from './consts';
+import type { SupportedSensors } from './types';
 
 const bleManager = new BleManager();
 
@@ -21,8 +23,10 @@ export const requestPermissions = async () => {
 // Function to start scanning, connect to the device, and subscribe to the temperature notifications
 export async function connectToDeviceAndMonitorSensors(
   deviceId: string,
-  temperatureCallback: (value: number) => void
-): Promise<void> {
+  callbacks: {
+    [key in keyof typeof ServicesAndCharacteristics]: (value: number) => void;
+  }
+): Promise<{ [key in SupportedSensors]: Subscription }> {
   return new Promise((resolve, reject) => {
     // Start scanning for devices
     bleManager.startDeviceScan(null, null, (error, device) => {
@@ -53,12 +57,9 @@ export async function connectToDeviceAndMonitorSensors(
             );
 
             // Subscribe to the temperature notifications by characteristic UUIDs
-            subscribeToTemperatureNotifications(
-              connectedDevice,
-              temperatureCallback
-            )
-              .then(() => {
-                resolve(); // Successfully subscribed
+            subscribeToSensorNotifications(connectedDevice, callbacks)
+              .then((subscriptions) => {
+                resolve(subscriptions); // Successfully subscribed
               })
               .catch((err) => {
                 reject(err); // Error subscribing to notifications
@@ -73,33 +74,42 @@ export async function connectToDeviceAndMonitorSensors(
 }
 
 // Helper function to subscribe to temperature notifications from the specified characteristic UUIDs
-function subscribeToTemperatureNotifications(
+function subscribeToSensorNotifications(
   device: Device,
-  callback: (value: number) => void
-): Promise<void> {
+  callbacks: {
+    [key in keyof typeof ServicesAndCharacteristics]: (value: number) => void;
+  }
+): Promise<{ [key in SupportedSensors]: Subscription }> {
   return new Promise((resolve, reject) => {
-    const serviceUUID = 'EF680200-9B35-4933-9B10-52FFA9740042';
-    const characteristicUUID = 'EF680201-9B35-4933-9B10-52FFA9740042';
-
-    // Monitor the characteristic for notifications
-    device.monitorCharacteristicForService(
-      serviceUUID,
-      characteristicUUID,
-      (error, characteristic) => {
-        if (error) {
-          reject(`Error monitoring characteristic: ${error.message}`);
-          return;
-        }
-
-        if (characteristic) {
-          // Here, you can parse the value of the characteristic
-          callback(parseTemperatureData(characteristic.value ?? '0'));
-        }
-      }
-    );
+    const subscriptions: { [key in SupportedSensors]: Subscription | null } =
+      NullSensorData;
+    // Monitor all characteristics for notifications
+    Object.keys(ServicesAndCharacteristics).forEach((sensor) => {
+      subscriptions[sensor as keyof typeof ServicesAndCharacteristics] =
+        device.monitorCharacteristicForService(
+          ServicesAndCharacteristics[
+            sensor as keyof typeof ServicesAndCharacteristics
+          ].serviceUUID,
+          ServicesAndCharacteristics[
+            sensor as keyof typeof ServicesAndCharacteristics
+          ].characteristicUUID,
+          (error, characteristic) => {
+            if (error) {
+              reject(`Error monitoring characteristic: ${error.message}`);
+              return;
+            }
+            if (characteristic) {
+              // Here, you can parse the value of the characteristic
+              callbacks[sensor as keyof typeof ServicesAndCharacteristics](
+                parseTemperatureData(characteristic.value ?? '0')
+              );
+            }
+          }
+        );
+    });
 
     // Resolve the promise once the subscription is successful
-    resolve();
+    resolve(subscriptions as { [key in SupportedSensors]: Subscription });
   });
 }
 

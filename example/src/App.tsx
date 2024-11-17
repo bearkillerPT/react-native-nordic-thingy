@@ -2,17 +2,22 @@ import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Styles from './stylesheets/App';
-import useThingySensors from 'react-native-nordic-thingy';
+import { useThingySensors } from 'react-native-nordic-thingy';
 import SensorDetails from './components/SensorDetails';
 
 const deviceName = 'Sala';
 
 const MyThingyDeviceComponent: React.FC = () => {
-  const { temperature, isConnected, error } = useThingySensors(deviceName);
-  //const { temperature, isConnected, error } = {
-  //  temperature: null,
-  //  isConnected: false,
+  const { sensorData, isConnected, error } = useThingySensors(deviceName);
+  //const { sensorData, isConnected, error } = {
+  //  isConnected: true,
   //  error: null,
+  //  sensorData: {
+  //    temperature: 20,
+  //    humidity: 20,
+  //    pressure: 20,
+  //    batteryLevel: 20,
+  //  },
   //};
   return (
     <>
@@ -37,7 +42,7 @@ const MyThingyDeviceComponent: React.FC = () => {
             </View>
           )}
           {isConnected ? (
-            <SensorDetails temperature={temperature} />
+            <SensorDetails sensorData={sensorData} />
           ) : (
             <>
               <ActivityIndicator size="large" color="#f0ebd8" />

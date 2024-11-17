@@ -2,6 +2,7 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   rootContainer: {
+    maxHeight: '80%',
     width: '95%',
     borderRadius: 10,
     borderWidth: 2,
@@ -35,7 +36,7 @@ export default StyleSheet.create({
     borderWidth: 2,
     borderColor: '#f0ebd8',
     borderRadius: 10,
-    padding: 10,
+    padding: 20,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
